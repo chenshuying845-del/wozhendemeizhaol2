@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Secret iPhone</title>
+<style>
+*{box-sizing:border-box}
+:root{--wall:linear-gradient(145deg,#f7eadf,#dcece5,#d9e1f4);--ink:#34414b}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:15px;background:#e9edf0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:var(--ink)}
+.phone{width:min(375px,96vw,calc(92dvh * 71 / 147));aspect-ratio:71 / 147;height:auto;max-height:92dvh;background:#222a30;padding:7px;border-radius:46px;box-shadow:0 24px 65px #52636b55;flex-shrink:0}
+.screen{height:100%;position:relative;overflow:hidden;border-radius:39px;background:var(--wall);isolation:isolate}
+.screen:before{content:"";position:absolute;inset:0;background:var(--wall);z-index:-1}
+.status{height:35px;padding:10px 23px 0;display:flex;justify-content:space-between;font-size:12px;font-weight:700}
+.island{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:94px;height:23px;background:#141719;border-radius:20px}
+.statusright{margin-left:auto}
+.page{position:absolute;inset:35px 0 0;display:none;overflow:auto}
+.page.active{display:block}
+.center{text-align:center}
+.lock{height:100%;min-height:0;padding:28px 18px 78px;display:flex;flex-direction:column;align-items:center}.lockcard{display:none}.lockbottom{gap:7px}.lockbottom .muted{font-size:11px}.lockbottom .hint{display:none}.keypad{width:min(245px,88%);gap:7px}.key{height:clamp(38px,6.2dvh,55px);border-radius:50%;width:clamp(38px,6.2dvh,55px);justify-self:center}.locktools{position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:space-between;padding:0 26px;z-index:5}.locktool{width:48px;height:48px;border:0;border-radius:50%;background:#ffffff65;color:#fff;font-size:23px;cursor:pointer;backdrop-filter:blur(8px)}.locktool span{display:block;font-size:9px;margin-top:2px}.camera-page{position:absolute;inset:35px 0 0;background:#111;display:none;color:white;z-index:6}.camera-page.active{display:block}.camera-view{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,#4a4a4a,#191919 60%,#080808);display:flex;flex-direction:column;justify-content:space-between;padding:18px 17px 25px}.camera-top{display:flex;justify-content:space-between;font-size:19px}.camera-bottom{display:flex;align-items:center;justify-content:space-between}.camera-control{border:0;border-radius:50%;width:48px;height:48px;background:#ffffff30;color:white;font-size:23px;cursor:pointer}.shutter{width:62px;height:62px;border:5px solid white;border-radius:50%;background:#ffffff50}.gallery-lock{position:absolute;inset:0;background:#111;color:white;display:none;z-index:7;padding:24px 18px}.gallery-lock.active{display:block}.gallery-lock .key{color:white;background:#ffffff18;border-color:#ffffff40}.gallery-lock .gallery-keypad{margin:20px auto}.gallery-lock .error{color:#ffb4bd;text-align:center}
+.date{font-size:15px}
+.clock{font-size:76px;line-height:1.3;font-weight:300;letter-spacing:-4px}
+.lockcard{margin-top:28px;width:100%;background:#ffffff68;border:1px solid #ffffff90;border-radius:22px;padding:17px;text-align:left;font-size:13px;line-height:1.7}
+.lockbottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:13px;width:100%}
+.lockbtn,.primary{border:0;background:#ffffffb8;border-radius:22px;padding:12px 23px;cursor:pointer;color:#34414b;font-weight:600}
+.hint{font-size:11px;color:#6e7d84}
+#passwordDots{font-size:25px;letter-spacing:12px;margin:15px 0 19px;height:30px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:245px}
+.key{height:55px;border:1px solid #ffffff95;background:#ffffff67;border-radius:18px;font-size:22px;color:#33414a;cursor:pointer}
+.key:active{background:#fff}
+.error{height:18px;color:#bb5c69;font-size:12px}
+.home{padding:8px 17px 18px;min-height:100%;display:flex;flex-direction:column}
+.welcome{font-size:13px;margin:7px 2px 13px}
+.widget{padding:16px 17px;border-radius:23px;background:#ffffff6e;border:1px solid #ffffff95;margin-bottom:20px}
+.widgettop{font-size:11px;color:#6c7a81}
+.widgettime{font-size:30px;margin:8px 0}
+.widgetsub{font-size:12px;color:#657780}
+.apps{position:relative;overflow:hidden;touch-action:pan-y;flex-shrink:0}.app-pages{display:flex;width:200%;transition:transform .25s ease}.app-page{width:50%;display:grid;grid-template-columns:repeat(4,1fr);align-content:start;gap:22px 5px;padding:0 1px}.page-dots{display:flex;justify-content:center;gap:7px;padding:13px 0 5px}.page-dot{width:6px;height:6px;border-radius:50%;border:0;padding:0;background:#64717b55}.page-dot.active{background:#34414b}
+.app{border:0;background:none;color:var(--ink);padding:0;cursor:pointer;min-width:0}
+.icon{width:53px;height:53px;margin:auto auto 6px;border-radius:15px;display:grid;place-items:center;font-size:27px;box-shadow:0 3px 9px #34414b12}
+.appname{font-size:10px;white-space:nowrap}
+.green{background:linear-gradient(140deg,#a7e67d,#46c769);color:white}
+.pink{background:linear-gradient(140deg,#7656ca,#ed6d98,#ffb95c);color:white}
+.black{background:#151719;color:white}
+.white{background:#ffffffdc}
+.yellow{background:linear-gradient(#fff0a7 0 20%,white 20%)}
+.blue{background:linear-gradient(140deg,#c8e5f0,#829bd0);color:white}
+.dock{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 5px;background:#ffffff70;border-radius:23px}
+.dock .icon{width:47px;height:47px}
+.appview{position:absolute;inset:35px 0 0;background:#f6f7f9;display:none;flex-direction:column}
+.appview.active{display:flex}
+.apphead{display:flex;align-items:center;justify-content:space-between;padding:14px 15px;background:#ffffffed;border-bottom:1px solid #e9ecee;flex-shrink:0}
+.apphead h3{font-size:16px;margin:0;text-align:center;flex:1}
+.back{border:0;background:none;color:#638b9b;font-size:13px;cursor:pointer}
+.content{flex:1;overflow:auto;padding:14px}
+.muted{font-size:11px;color:#8a969e}
+.row{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #e8ebee;cursor:pointer}
+.avatar{width:43px;height:43px;border-radius:50%;background:#e0ebe4;display:grid;place-items:center;font-size:21px;flex-shrink:0;overflow:hidden}
+.rowtext{flex:1;min-width:0}
+.rowtext b{font-size:13px}
+.rowtext p{font-size:11px;color:#839098;margin:5px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bubble{max-width:86%;background:white;border-radius:15px;padding:11px 12px;margin:9px 0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.mine{margin-left:auto;background:#d8f2b9}
+.replybox{padding:12px;background:white;border-top:1px solid #e9ecef;display:grid;gap:8px}
+.replybtn{border:1px solid #dce4e4;background:#f7faf8;padding:10px;border-radius:14px;text-align:left;font-size:12px;cursor:pointer}
+.post{background:white;border:1px solid #e9ecef;border-radius:17px;margin-bottom:14px;overflow:hidden}
+.posthead{display:flex;align-items:center;gap:8px;padding:12px;font-size:12px}
+.postphoto{height:165px;display:grid;place-items:center;font-size:55px;background:linear-gradient(145deg,#e9d7ce,#d6e7dc,#c8d7ed)}
+.posttext{font-size:12px;line-height:1.7;padding:10px 13px}
+.action{border:0;background:none;padding:5px 13px 13px;font-size:13px;cursor:pointer;color:#5e7681}
+.compose{width:100%;min-height:75px;border:1px solid #e0e6e7;border-radius:13px;padding:11px;font:inherit;font-size:13px;resize:vertical}
+.setting{background:white;border-radius:15px;padding:0 13px;margin-bottom:14px}
+.settingrow{padding:14px 0;border-bottom:1px solid #eef0f2;font-size:12px}
+.settingrow:last-child{border:0}
+.settingrow label{display:block;margin-bottom:8px;color:#718087}
+.settingrow input,.settingrow select{width:100%;padding:10px;border:1px solid #dce2e5;border-radius:10px;font:inherit;background:white}
+.smallbtn{border:0;border-radius:18px;background:#e0eee4;padding:9px 13px;font-size:12px;cursor:pointer;margin-top:8px}
+.toast{position:absolute;bottom:45px;left:50%;transform:translateX(-50%);padding:10px 14px;background:#25313be8;color:white;border-radius:20px;font-size:12px;display:none;z-index:9;white-space:nowrap}
+.homebar{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:105px;height:4px;border-radius:5px;background:#2836408c;z-index:10}
+
+/* X 專屬界面：僅作用於 X，不改變其他 App */
+.xshell{margin:-14px;padding:0;background:#fff;color:#0f1419;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+.xnav{display:flex;align-items:center;gap:16px;padding:13px 15px;border-bottom:1px solid #eff3f4;position:sticky;top:0;background:#ffffffed;z-index:2}
+.xnav button,.xiconbtn{border:0;background:transparent;color:#0f1419;cursor:pointer;font-size:22px;padding:0}
+.xbrand{font-size:23px;font-weight:800;flex:1;text-align:center}
+.xprofile{padding:0 15px 15px;border-bottom:1px solid #eff3f4}
+.xbanner{height:95px;background:linear-gradient(120deg,#dce9e5,#d8e3f5,#f2e2d9);margin:0 -15px 0;}
+.xprofilepic{width:72px;height:72px;border:4px solid white;border-radius:50%;object-fit:cover;background:#e4e7eb;margin-top:-36px;position:relative}
+.xname{font-size:21px;font-weight:800;margin-top:3px}.xhandle{font-size:13px;color:#536471;margin:2px 0 10px}
+.xbio{font-size:13px;line-height:1.5;margin:8px 0}.xstats{font-size:12px;color:#536471;margin:10px 0}.xstats b{color:#0f1419}
+.xfollow{border:0;border-radius:22px;background:#0f1419;color:#fff;padding:9px 17px;font-weight:700;float:right;cursor:pointer}
+.xtabs{display:flex;border-bottom:1px solid #eff3f4;position:sticky;top:47px;background:#fff;z-index:1}
+.xtab{flex:1;border:0;background:white;padding:13px 4px;font-size:12px;color:#536471;cursor:pointer}.xtab.active{color:#0f1419;font-weight:800;border-bottom:3px solid #1d9bf0}
+.xtweet{display:flex;gap:10px;padding:14px 13px;border-bottom:1px solid #eff3f4;background:white;color:#0f1419}
+.xtweetavatar{width:42px;height:42px;flex-shrink:0;border-radius:50%;object-fit:cover;background:#e5e7eb}
+.xtweetbody{min-width:0;flex:1}.xbyline{font-size:12px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}.xbyline strong{font-size:13px}.xmuted{color:#536471}.xdate{color:#536471;font-size:11px}.xtweettext{font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0 10px}
+.xmedia{width:100%;display:block;max-height:250px;object-fit:cover;border-radius:15px;border:1px solid #eff3f4;margin:7px 0 9px}
+.xactions{display:flex;justify-content:space-between;gap:4px;color:#536471}.xactions button{border:0;background:transparent;color:inherit;font-size:11px;cursor:pointer;padding:4px 2px}.xactions button.liked{color:#e0245e}
+.xsideveil{position:absolute;inset:0;background:#0006;z-index:10;display:none}.xsideveil.open{display:block}.xsidebar{position:absolute;left:0;top:0;bottom:0;width:84%;max-width:300px;background:#fff;padding:18px 15px;box-shadow:8px 0 25px #0002;overflow:auto;color:#0f1419}
+.xsidehead{display:flex;align-items:center;justify-content:space-between}.xsideavatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#e5e7eb}.xsideitem{padding:15px 2px;border-bottom:1px solid #eff3f4;font-size:14px;cursor:pointer}.xaccount{display:flex;align-items:center;gap:10px;padding:13px 8px;border-radius:13px;cursor:pointer}.xaccount:hover{background:#f5f8fa}.xaccount img{width:43px;height:43px;object-fit:cover;border-radius:50%;background:#e5e7eb}.xswitch{position:absolute;inset:auto 12px 12px;background:white;border:1px solid #e1e8ed;box-shadow:0 5px 25px #0002;border-radius:18px;padding:13px;z-index:12;display:none;color:#0f1419}.xswitch.open{display:block}.xswitch h4{margin:4px 0 9px;font-size:15px}.xcompose{padding:12px;border-bottom:1px solid #eff3f4}.xcompose textarea{width:100%;min-height:70px;border:1px solid #d9e1e8;border-radius:13px;padding:10px;font:inherit;font-size:13px;resize:vertical}.xbluebtn{border:0;border-radius:22px;background:#1d9bf0;color:white;font-weight:700;padding:9px 15px;cursor:pointer}.xempty{padding:28px 18px;text-align:center;color:#536471;font-size:13px}
+
+
+/* 音樂 App：單曲本機播放介面 */
+.music-player{margin:-14px;min-height:100%;padding:18px 18px 22px;background:linear-gradient(180deg,#101014,#050506 75%);color:#f5f5f7;display:flex;flex-direction:column;align-items:center;overflow:auto}
+.music-top{width:100%;display:flex;align-items:center;justify-content:space-between;color:#d4d4d8;font-size:12px;margin-bottom:16px}
+.music-top button,.music-list-btn{border:0;background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.music-year{font-size:13px;letter-spacing:1px;color:#aaa}
+.music-vinyl-wrap{width:min(72vw,265px);height:min(72vw,265px);max-width:265px;max-height:265px;position:relative;display:grid;place-items:center;margin:2px auto 18px;flex-shrink:0}
+.music-vinyl{width:100%;height:100%;border-radius:50%;background:repeating-radial-gradient(circle at center,#161619 0px,#161619 3px,#202024 4px,#111114 6px);border:7px solid #171719;box-shadow:0 8px 28px #000b;display:grid;place-items:center;animation:vinylSpin 5s linear infinite;animation-play-state:paused}
+.music-vinyl.playing{animation-play-state:running}
+.music-cover{width:57%;height:57%;border-radius:50%;object-fit:cover;border:1px solid #444;box-shadow:0 0 0 4px #0c0c0f}
+@keyframes vinylSpin{to{transform:rotate(360deg)}}
+.music-meta{width:100%;display:flex;align-items:center;gap:12px;margin-top:2px}
+.music-small-cover{width:53px;height:53px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.music-meta-main{min-width:0;flex:1}.music-song-title{font-size:17px;font-weight:700;margin-bottom:5px}.music-artist{font-size:12px;color:#a2a2aa}.music-heart{border:0;background:none;color:#bbb;font-size:23px}
+.music-progress{width:100%;margin-top:20px}.music-range{width:100%;accent-color:#f5f5f5;height:4px;cursor:pointer}.music-times{display:flex;justify-content:space-between;color:#999;font-size:10px;margin-top:5px}.music-quality{text-align:center;color:#a5a5ad;font-size:11px;margin-top:8px}
+.music-controls{width:100%;display:flex;align-items:center;justify-content:space-between;margin-top:18px}.music-control{border:0;background:none;color:#eee;font-size:25px;cursor:pointer;padding:8px}.music-play{width:58px;height:58px;border:0;border-radius:50%;background:#f5f5f5;color:#101014;font-size:27px;display:grid;place-items:center;cursor:pointer;padding-left:4px}
+.music-list{display:none;width:100%;margin-top:13px;padding:12px;background:#19191d;border:1px solid #29292e;border-radius:14px}.music-list.open{display:block}.music-list-heading{font-size:12px;color:#c8c8ce;margin-bottom:10px}.music-track{display:flex;align-items:center;gap:10px;font-size:12px}.music-track img{width:36px;height:36px;object-fit:cover;border-radius:6px}.music-track small{display:block;color:#999;margin-top:4px}.music-error{font-size:10px;color:#e8a4a4;text-align:center;min-height:15px;margin-top:5px}
+
+
+/* 相簿、電話與小號個人資料編輯介面 */
+.album-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:10px}
+.album-item{position:relative;aspect-ratio:1;border:0;padding:0;background:#e7e9ed;overflow:hidden;cursor:pointer}
+.album-item img{width:100%;height:100%;object-fit:cover;display:block}
+.album-date{position:absolute;left:4px;bottom:4px;padding:3px 5px;border-radius:5px;background:#0008;color:#fff;font-size:9px}
+.photo-viewer{position:fixed;inset:0;background:#000f;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.photo-viewer.open{display:flex}.photo-viewer img{max-width:100%;max-height:85vh;object-fit:contain}.photo-viewer button{position:absolute;top:20px;right:20px;border:0;background:#ffffff30;color:white;border-radius:50%;width:40px;height:40px;font-size:25px}
+.phone-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#fff;border-top:1px solid #e5e7eb;padding:8px 2px 14px;flex-shrink:0}
+.phone-tab{border:0;background:none;color:#7a838b;font-size:9px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:3px 0}.phone-tab span{font-size:20px}.phone-tab.active{color:#249b70;font-weight:700}
+.contact-detail{text-align:center;padding:18px 8px}.contact-detail .big-avatar{width:82px;height:82px;border-radius:50%;background:#e8edf0;display:grid;place-items:center;font-size:38px;margin:0 auto 12px}.contact-detail h2{font-size:21px;margin:8px}.contact-action{display:inline-block;background:white;border:0;border-radius:13px;padding:10px 18px;margin:5px;color:#26956f}
+.voicemail-card{background:white;border-radius:15px;padding:14px;margin-bottom:10px}.vm-play{border:0;background:#e4f6ee;border-radius:50%;width:40px;height:40px;font-size:17px;color:#16865e}.vm-wave{height:24px;display:flex;align-items:center;gap:3px;flex:1}.vm-wave i{width:3px;border-radius:4px;background:#28a879;height:var(--h)}
+.xedit-panel{padding:14px;background:#f7f9fa;border-bottom:1px solid #eff3f4}.xedit-panel label{display:block;font-size:11px;color:#536471;margin:8px 0 5px}.xedit-panel input,.xedit-panel textarea{width:100%;padding:10px;border:1px solid #cfd9de;border-radius:10px;font:inherit;font-size:12px}.xedit-panel textarea{min-height:65px;resize:vertical}
+
+</style>
+</head>
+<body>
+<div class="phone"><div class="screen" id="screen">
+<div class="status"><span id="statusTime">9:41</span><div class="island"></div><span class="statusright">▮▮▮　 Wi-Fi　▰</span></div>
+
+<section class="page active" id="lockPage">
+ <div class="lock">
+  <div class="date" id="lockDate">10月26日 星期一</div>
+  <div class="clock" id="lockClock">09:41</div>
+  <div class="lockbottom">
+   <div class="muted">請輸入四位數字密碼</div>
+   <div id="passwordDots">○ ○ ○ ○</div>
+   <div class="keypad">
+    <button class="key" onclick="keyIn('1')">1</button><button class="key" onclick="keyIn('2')">2</button><button class="key" onclick="keyIn('3')">3</button>
+    <button class="key" onclick="keyIn('4')">4</button><button class="key" onclick="keyIn('5')">5</button><button class="key" onclick="keyIn('6')">6</button>
+    <button class="key" onclick="keyIn('7')">7</button><button class="key" onclick="keyIn('8')">8</button><button class="key" onclick="keyIn('9')">9</button>
+    <button class="key" onclick="clearPass()">⌫</button><button class="key" onclick="keyIn('0')">0</button><button class="key" onclick="checkPass()">↵</button>
+   </div>
+   <div class="error" id="passError"></div>
+  </div>
+ </div>
+ <div class="locktools"><button class="locktool" onclick="toggleFlashlight()" aria-label="手電筒">🔦<span>手電筒</span></button><button class="locktool" onclick="openCamera()" aria-label="相機">📷<span>相機</span></button></div>
+</section>
+
+<section class="page" id="homePage">
+ <div class="home">
+  <div class="welcome" id="welcome">Good day ☁️</div>
+  <div class="widget"><div class="widgettop">MY LITTLE WORLD · 今日記錄</div><div class="widgettime" id="homeClock">09:41</div><div class="widgetsub" id="storyStatus">有 5 個聯繫人，也許有人正等著你回復。</div></div>
+  <div class="apps" id="appsSwipe" ontouchstart="startSwipe(event)" ontouchend="endSwipe(event)" onmousedown="startMouseSwipe(event)" onmouseup="endMouseSwipe(event)">
+   <div class="app-pages" id="appPages">
+    <div class="app-page">
+     <button class="app" onclick="openApp('line')"><div class="icon green">●</div><div class="appname">LINE</div></button>
+     <button class="app" onclick="openApp('insta')"><div class="icon pink">◎</div><div class="appname">Instagram</div></button>
+     <button class="app" onclick="openApp('x')"><div class="icon black">𝕏</div><div class="appname">X</div></button>
+     <button class="app" onclick="openApp('settings')"><div class="icon blue">⚙</div><div class="appname">設置</div></button>
+    </div>
+    <div class="app-page">
+     <button class="app" onclick="openApp('notes')"><div class="icon yellow">📝</div><div class="appname">備忘錄</div></button>
+     <button class="app" onclick="openApp('photos')"><div class="icon white">🌈</div><div class="appname">照片</div></button>
+     <button class="app" onclick="openApp('music')"><div class="icon pink">♫</div><div class="appname">音樂</div></button>
+     <button class="app" onclick="openApp('phone')"><div class="icon green">☎</div><div class="appname">電話</div></button>
+     <button class="app" onclick="openApp('weather')"><div class="icon" style="background:linear-gradient(145deg,#a9c8e8,#657f9d);color:white">☁</div><div class="appname">天氣</div></button>
+     <button class="app" onclick="openApp('google')"><div class="icon" style="background:white;color:#4285f4;font-weight:800">G</div><div class="appname">Google</div></button>
+    </div>
+   </div>
+  </div>
+  <div class="page-dots"><button class="page-dot active" id="dot0" onclick="setHomePage(0)" aria-label="第一頁"></button><button class="page-dot" id="dot1" onclick="setHomePage(1)" aria-label="第二頁"></button></div>
+  <div style="flex:1;min-height:22px"></div>
+  <div class="dock">
+   <button class="app" onclick="openApp('phone')"><div class="icon green">☎</div></button>
+   <button class="app" onclick="openApp('line')"><div class="icon green">●</div></button>
+   <button class="app" onclick="openApp('insta')"><div class="icon pink">◎</div></button>
+   <button class="app" onclick="openApp('x')"><div class="icon black">𝕏</div></button>
+  </div>
+ </div>
+</section>
+
+<section class="appview" id="appView">
+ <header class="apphead"><button class="back" onclick="backHome()">‹ 桌面</button><h3 id="appTitle">LINE</h3><button class="back" onclick="backHome()">⌂</button></header>
+ <div class="content" id="appContent"></div>
+ <div id="appFooter"></div>
+</section>
+<section class="camera-page" id="cameraPage"><div class="camera-view"><div class="camera-top"><button class="camera-control" onclick="closeCamera()">×</button><span>相機</span><button class="camera-control" onclick="toast('閃光燈不可用')">⚡</button></div><div class="camera-bottom"><button class="camera-control" onclick="requestGallery()" aria-label="相冊">▧</button><button class="shutter" onclick="toast('此相機為演示模式，無法拍照')" aria-label="拍照"></button><button class="camera-control" onclick="toast('此相機為演示模式')">↻</button></div></div></section>
+<div class="gallery-lock" id="galleryLock"><div style="display:flex;justify-content:space-between;align-items:center"><button class="back" style="color:white" onclick="cancelGallery()">‹ 返回相機</button><b>輸入密碼以打開相冊</b><span></span></div><div id="galleryPasswordDots" style="text-align:center;font-size:25px;letter-spacing:12px;margin:28px 0">○ ○ ○ ○</div><div class="keypad gallery-keypad"><button class="key" onclick="galleryKeyIn('1')">1</button><button class="key" onclick="galleryKeyIn('2')">2</button><button class="key" onclick="galleryKeyIn('3')">3</button><button class="key" onclick="galleryKeyIn('4')">4</button><button class="key" onclick="galleryKeyIn('5')">5</button><button class="key" onclick="galleryKeyIn('6')">6</button><button class="key" onclick="galleryKeyIn('7')">7</button><button class="key" onclick="galleryKeyIn('8')">8</button><button class="key" onclick="galleryKeyIn('9')">9</button><button class="key" onclick="galleryClear()">⌫</button><button class="key" onclick="galleryKeyIn('0')">0</button><button class="key" onclick="galleryCheck()">↵</button></div><div class="error" id="galleryError"></div></section>
+<div class="toast" id="toast"></div>
+<div class="homebar" onclick="backHome()"></div>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const defaultContacts=[
+ {name:'樊振東',emoji:'🐼',preview:'有件事想跟你說。',messages:[{from:'them',text:'最近還好嗎？有件事想跟你說。'},{from:'them',text:'前幾天那件事，你還記得嗎？'}],replies:['記得，你說吧。','最近還好，你呢？','怎麼突然這麼認真？'],next:'你還記得那天大家一起拍的照片嗎？我好像發現了一個細節。',clue:'照片背後似乎藏著一個日期：06/27。'},
+ {name:'馮翊新',emoji:'🌬️',preview:'你有沒有看那條動態？',messages:[{from:'them',text:'你有沒有看那條動態？'},{from:'them',text:'總覺得有人在暗示甚麼。'}],replies:['哪一條動態？','我看到了，你怎麼想？','你是不是知道些甚麼？'],next:'那條動態發出的時間，和你手機的密碼很像。',clue:'有人似乎知道你的手機密碼，但他為甚麼不直接說？'},
+ {name:'朋友',emoji:'🌷',preview:'我覺得你應該看看他的動態。',messages:[{from:'them',text:'我覺得你應該看看他的動態。'},{from:'them',text:'最近你是不是有事情瞞著我？'}],replies:['我也正在調查。','等我理清楚再告訴你。','你先說說你發現了甚麼。'],next:'我看到有人把一張舊照片設成了僅自己可見。',clue:'舊照片的發佈者隱藏了內容，或許 Instagram 上還有線索。'},
+ {name:'哥哥',emoji:'🌙',preview:'密碼還是那個數字嗎？',messages:[{from:'them',text:'到家了嗎？'},{from:'them',text:'密碼還是那個數字嗎？記得保護好自己的隱私。'}],replies:['到了，放心吧。','你為甚麼問密碼？','我會注意的。'],next:'六月二十七日那天，你說過要保守一個秘密。',clue:'哥哥知道 0627 的含義，卻似乎不願意直接告訴你。'},
+ {name:'張本智和',emoji:'👦',preview:'那天的事情，你還在意嗎？',messages:[{from:'them',text:'嗨，好久不見。'},{from:'them',text:'那天的事情，你還在意嗎？'}],replies:['你指的是哪件事？','有些事我還記得。','我們可以好好聊聊。'],next:'如果你想知道答案，就去看看 X 上那條沒有署名的帖子。',clue:'那條匿名帖子提到了一個只有你們才知道的約定。'}
+];
+let contacts=JSON.parse(localStorage.getItem('myPhoneContacts')||'null')||defaultContacts.map(c=>({...c,messages:c.messages.map(m=>({...m}))}));
+let owner=localStorage.getItem('myPhoneOwner')||'toby0817';
+if(owner==='小嶼'){owner='toby0817';localStorage.setItem('myPhoneOwner',owner)}
+let wall=localStorage.getItem('myPhoneWall')||'mint';
+let avatar='';
+let clueCount=Number(localStorage.getItem('myPhoneClues')||0);
+let currentApp='',chatIndex=-1,pass='',activeMessages=[],notifications=0,wrongPassCount=0,galleryPass='',pendingGallery=false,homePageIndex=0,swipeStartX=0,mouseStartX=0,flashlightOn=false;
+let posts=[
+ {name:'mimi',emoji:'🌷',text:'有些故事，不是忘記了，而是還沒找到合適的答案。',photo:'🌷'},
+ {name:'dailyblue',emoji:'🌊',text:'今天翻到了一張舊照片，突然想起了六月的某一天。',photo:'🌊'},
+ {name:'coffee',emoji:'☕',text:'如果你收到這條動態，也許你會明白我的意思。',photo:'☕'}
+];
+
+let xAccount='main';
+let smallProfile=JSON.parse(localStorage.getItem('smallXProfile')||'null')||{name:'omo_1727',bio:'private thoughts, saved here.',channel:'LINE / 私人日記'};
+let smallEditOpen=false;
+let phoneTab='favorites',phoneContactIndex=-1,vmOpen=false,vmPlaying=false;
+const phonePeople=['爸爸','樊振東','馮翊新','哥哥','郭冠宏','媽媽','張本智和'];
+const albumPhotos=[{src:'assets/album-01.jpg',date:'2024/02/18'},{src:'assets/album-02.jpg',date:'2024/07/06'},{src:'assets/album-03.jpg',date:'2025/01/23'},{src:'assets/album-04.jpg',date:'2025/05/14'},{src:'assets/album-05.jpg',date:'2025/09/02'},{src:'assets/album-06.jpg',date:'2026/02/17'}];
+const mainAccountPosts=[
+ {date:'24/2/19',text:'I finished the last match in my first T-league yesterday! We did our best though the results were a little bit disappointing. It’s a fabulous experience with Okayama rivets to compete with other teams',photo:'assets/photo-team-selfie.jpg'},
+ {date:'24/2/19',text:'Thanks to the sponsors of Okayama rivets, leader and coaches and I truly appreciate my teammates’ help. I got many valuable experiences from them. Without them, I would not be here. In addition, I saw so many fans coming here. Thank for being with me. Fight for Champions!! Cheers!! 💪',photo:'assets/photo-team.jpg'},
+];
+const smallStoryTexts=[
+'他說要和我試一下，不是試著談戀愛，是試著看看身體是否契合的意思，我沒想到他會主動來找我。更衣室的空調打得太低了，水汽散髮的熱意在觸碰到身體的時候已經涼透，我想我的心也很涼。他看上去很認真，平常不會直視我的眼睛，這次卻直勾勾地盯著我看，那時我就在想，如果我拒絕他，是不是再也看不到他的這個眼神了？我說，給我一天時間考慮一下。',
+'第二天一大早我就要回台北，坐在候機廳等待的時候看到手機上傳來的消息，朋友的，哥哥的，沒有他的。對話框很安靜，停留在年初的新春祝福。他不太會打中文，傳過來短短的語音，說林選手，新年快樂，背景有隱隱約約的笑鬧聲，而我沒有告訴他的是，離台北的新年還有一個小時，我只是說，謝謝你，新年快樂。\n起飛前我給他的line發去消息，說我答應。',
+'我坐地鐵來見他，戴著口罩和鴨舌帽，馮翊新問我為什麼這麼晚了還要出門，我說去見一個很久沒有見的朋友，朋友還穿得這麼……他欲言又止，給我了一個模稜兩可的比劃，我知道他覺得我穿得很奇怪，不像是以前和朋友出門會穿的衣服，我沒有告訴他的是，我只是不想被人認出來而已。\n酒店的門敲了一下就打開了，他站在門內等我進來，穿著看起來溫暖的睡衣，身體還有沐浴露隱隱的香味。他很膽怯地避開我的視線，嘟噥了一句我聽不懂的日語，緊接著轉換生澀的中文，請進，請進。我們的關係在那天的line上被確定，儘管我不明白他出於什麼樣的目的和我談起的這些，我想，我有必要把握住眼前想把握的。\n我用腳關上門，趁他沒有反應過來親吻他的嘴唇。',
+'他睡熟了，靠近能聽見均勻的呼吸，我把手機的亮度調到最低，生怕他驚醒，倚在床頭打下這些字。\n我好困惑。說不心動是假的，他靠過來的姿態，擁抱我的神情，親吻我的模樣，讓我漸漸覺得這一切並不是那麼虛幻，是伸手就能握住的圖景，我念出他的乳名，想逗一逗他，結果他往我的肩頭狠狠咬了一口，像狗一樣給我咬出一個印子，事後還在慌張地朝那裡吹起，說對不起我不是故意的。\n我猜他就是故意的。\n那我只好老老實實叫他的姓氏。反正我叫過那麼多次。',
+'馮翊新問我這幾天都去哪了，為什麼不回酒店睡覺，我打哈哈說露宿街頭了，他的表情沈下來，說我可沒有那麼好糊弄，你是不是去找他了？\n我驚得說不出話來，你怎麼知道的？你怎麼發現的？馮翊新說，我們在同一個訓練場訓練時，只要是休息，你都會看向他的方向。\n我被堵得說不出話來，忽略了他不贊同的眼神，心裡卻在想，那他有看我沒有呀？',
+'他開始找我聊天，用語音的方式，中文比我說得還要黏黏糊糊，有時候為了體現他看得懂中文還偏偏要打字給我，寫了一堆錯別字還不承認。我說好吧好吧，你以後不如將日語給我聽，他笑了，嘀嘀咕咕在語音里說半天，最後說我想要你聽得懂我在講什麼。\n我說我聽得懂呀，他說那你能看懂我嗎？',
+'好久沒有登陸這個賬號。以前的心境居然依稀記不太清了，不知道是我現在習慣了他的消息，我們的關係，還是暫時不想從這段關係當中解脫出來？好難的命題。',
+'最近沒和他對上過，竟然有些想念。',
+'聽說他本來也要去老瓦杯，但是因為聯賽的事情還是放棄了，偶爾想想如果我們做隊友，那應該挺精彩的。',
+'我們約了下次見面的時間。',
+'想了想還是決定把這件事記錄下來。睡在他房間的時候好像聽到有人在敲門，迷迷糊糊覺得這是自己的房間了，再加上他更是睡得昏沈，一直在推我讓我去開門，迫於無奈我只好去了，結果拉開門，迎面撞上他隊友的臉。\n事到如今，我只能安慰自己，房間昏暗，說不定篠塚沒看到我是誰，卻無法忽視關上門的那一刻他真真切切的驚恐。他也醒了，坐在床頭不知所措，想了想又想我擔保說篠塚不會往外亂說的。\n可是，我們之間到底有什麼好說的呢？我到最後也沒有勇氣問出口。偶爾，我是說偶爾，我會退縮。',
+'上半年比賽湊得緊，我們沒有再提見面的事，反正比賽的時候在官酒和訓練場抬頭不見低頭見的，當然，我們不會打招呼。\n篠塚經歷了上一次的事之後對我的眼神總是有著探究，但隨他吧！反正我裝作聽不懂他們說話也不是一次兩次了。',
+'他問我，累嗎？\n事後難得溫存了一會，我沒聽清楚他說的什麼，又問了一遍，他貼著我的耳朵小聲地，看起來不是很在乎地問，你累嗎？\n我想推開他。\n你為什麼會問這個問題呢？當初是你先開始的，是你要牽著我的手，在酒店等我的，為什麼要問我累不累呢？我想說，我想說……如果我累了，我也不會握緊你的手了。\n但我什麼也沒有說，我也沒有推開他。',
+'躲著他是很輕易的事情。不回消息、避開常去的地方，拉著馮翊新在食堂吃飯，假裝沒有看見他。你無法叫醒一個裝睡的人，而我只是突然不想面對我們現在的關係。\n朋友？算不上；敵人？誰會和敵人做愛，卡在一個不尷不尬的位置，好像沒有他開口提出的那層關係，我們的定位就無法得到一個合理的解釋，好像只有我們當中的誰先往前邁一步，這道題才會有不一樣的解法。\n可張本，我好累。對你有感情是一件很累的事。',
+'他把馮翊新支開了，堵著我在更衣室，不讓別人進來。我怎麼從來沒有發現生活里他也是這麼執拗的一個人？林，他開始直白地稱呼我的名字，你生氣了是不是。\n我沒生氣，我說。\n那給你發消息你都不回。\n我太累了，不想回。我裝作很冷酷地樣子，沒錯過他眼裡一閃而過的受傷。於是我只好放軟了語氣，說我最近太忙了，實在是沒空和你見面。\n連一句話也不願意和我說嗎？\n他還想說什麼，我知道他想吻我，他甚至抓起了我的衣領。但門外響起了重重的敲門聲，我躲過去了。',
+'他後來也沒再來找過我。',
+'登上這個號是昨天夢到他了。夢見我們還保持著那樣的關係的時候，他枕在我的膝蓋上玩手機。我閉著眼睛假寐，夢里他拿起我的手機晃呀晃，點開我和他的聊天框，裝作我本人和他自己聊天。\n你好呀。\n你好呀。\n你是誰？\n我是tomo，你是toby嗎？\n他被自己逗得直樂，我懶得理他，結果他不一會自己拿著手機懟到我的眼皮子底下，故作驚喜地問，是誰在和你表白呀？\n我睜開眼，看到那個聊天框最頂上的名字是harimoto。\n我撤回了，他洋洋得意地說，你永遠都不知道我給你寫了什麼了。\n從夢里醒來我才想起，那是現實發生過的事，只不過在夢里愈發清晰地重演了一遍，而我那時候沒有真的睡著，沒有真的閉眼睛，我真的看到他給我發了什麼話。\n我怎麼忘記了呢？',
+'明明一開始我想的是，如果他不喜歡我，那我們一直保持著這樣的關係就夠了，可為什麼，我想要的越來越多，我越來越得不到滿足呢？\n是那天他打完字又撤回，說他愛我的那一刻嗎？'
+];
+const smallStoryDates=['2024-02-08','2024-02-09','2024-02-12','2024-02-14','2024-02-20','2024-02-24','2025-03-11','2025-03-28','2025-04-16','2025-05-03','2025-05-17','2025-06-06','2025-06-19','2025-07-02','2025-07-15','2025-08-23','2026-06-12','2026-07-09'];
+const smallAccountPosts=smallStoryTexts.map((text,i)=>({date:smallStoryDates[i],text,photo:''}));
+
+const walls={mint:'linear-gradient(145deg,#f7eadf,#dcece5,#d9e1f4)',pink:'linear-gradient(145deg,#f6dbe5,#f6e8d8,#e1d9f3)',blue:'linear-gradient(145deg,#d7e8f2,#cbd7f3,#e4e9f1)',night:'linear-gradient(145deg,#343e5a,#52677d,#9bafbb)'};
+function save(){
+ localStorage.setItem('myPhoneContacts',JSON.stringify(contacts));
+ localStorage.setItem('myPhoneOwner',owner);localStorage.setItem('myPhoneWall',wall);
+ localStorage.removeItem('myPhoneAvatar');localStorage.setItem('myPhoneClues',clueCount);
+}
+function clock(){
+ let d=new Date(),t=d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});
+ $('statusTime').textContent=t;$('lockClock').textContent=t;$('homeClock').textContent=t;
+ $('lockDate').textContent=d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'});
+}
+clock();setInterval(clock,10000);
+function applyWall(){ $('screen').style.setProperty('--wall',walls[wall]||walls.mint); }
+applyWall();
+function keyIn(n){if(pass.length>=4)return;pass+=n;showPass();if(pass.length===4)setTimeout(checkPass,120)}
+function clearPass(){pass=pass.slice(0,-1);showPass();$('passError').textContent=''}
+function showPass(){$('passwordDots').textContent=Array.from({length:4},(_,i)=>i<pass.length?'●':'○').join(' ')}
+function checkPass(){
+ if(pass==='0627'){
+  wrongPassCount=0;$('lockPage').classList.remove('active');$('homePage').classList.add('active');
+  $('welcome').textContent='Good day, '+owner;
+  toast('歡迎回來，'+owner+' ✨');pass='';showPass();$('passError').textContent='';
+ }else{
+  wrongPassCount++;$('passError').textContent=wrongPassCount>=3?'他的生日':'密碼不正確，請再試一次';pass='';showPass();
+ }
+}
+function toggleFlashlight(){flashlightOn=!flashlightOn;const b=document.querySelector('.locktools .locktool');b.style.background=flashlightOn?'#fffbd4':'#ffffff65';b.style.color=flashlightOn?'#3b4145':'#fff';toast(flashlightOn?'手電筒已打開（模擬）':'手電筒已關閉')}
+function openCamera(){$('cameraPage').classList.add('active')}
+function closeCamera(){$('cameraPage').classList.remove('active');$('galleryLock').classList.remove('active')}
+function requestGallery(){galleryPass='';$('galleryError').textContent='';showGalleryPass();$('galleryLock').classList.add('active')}
+function cancelGallery(){$('galleryLock').classList.remove('active');galleryPass=''}
+function showGalleryPass(){$('galleryPasswordDots').textContent=Array.from({length:4},(_,i)=>i<galleryPass.length?'●':'○').join(' ')}
+function galleryKeyIn(n){if(galleryPass.length>=4)return;galleryPass+=n;showGalleryPass();if(galleryPass.length===4)setTimeout(galleryCheck,120)}
+function galleryClear(){galleryPass=galleryPass.slice(0,-1);showGalleryPass();$('galleryError').textContent=''}
+function galleryCheck(){if(galleryPass==='0627'){$('cameraPage').classList.remove('active');$('galleryLock').classList.remove('active');$('lockPage').classList.remove('active');$('homePage').classList.remove('active');openApp('photos');galleryPass=''}else{$('galleryError').textContent='密碼不正確';galleryPass='';showGalleryPass()}}
+function setHomePage(n){homePageIndex=n;$('appPages').style.transform=`translateX(-${n*50}%)`;[0,1].forEach(i=>$('dot'+i).classList.toggle('active',i===n))}
+function startSwipe(e){swipeStartX=e.changedTouches[0].clientX}
+function endSwipe(e){const dx=e.changedTouches[0].clientX-swipeStartX;if(Math.abs(dx)>35)setHomePage(dx<0?1:0)}
+function startMouseSwipe(e){mouseStartX=e.clientX}
+function endMouseSwipe(e){const dx=e.clientX-mouseStartX;if(Math.abs(dx)>45)setHomePage(dx<0?1:0)}
+function backHome(){$('appView').classList.remove('active');$('homePage').classList.add('active');currentApp='';chatIndex=-1}
+function openApp(app){
+ currentApp=app;$('homePage').classList.remove('active');$('appView').classList.add('active');render();
+}
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(window.toastT);window.toastT=setTimeout(()=>$('toast').style.display='none',1900)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+let musicReady=false;
+function renderMusic(c){
+ c.innerHTML=`<div class="music-player">
+  <div class="music-top"><button onclick="backHome()" aria-label="返回">⌄</button><span class="music-year">NOW PLAYING</span><button onclick="toggleMusicList()" aria-label="歌單">☷</button></div>
+  <div class="music-vinyl-wrap"><div id="musicVinyl" class="music-vinyl"><img class="music-cover" src="assets/non-ideal-lover-cover.jpg" alt="非理想愛人封面"></div></div>
+  <div class="music-meta"><img class="music-small-cover" src="assets/non-ideal-lover-cover.jpg" alt="封面"><div class="music-meta-main"><div class="music-song-title">非理想愛人</div><div class="music-artist">Pandora 樂隊</div></div><button class="music-heart" onclick="this.textContent=this.textContent==='♡'?'♥':'♡'" aria-label="收藏">♡</button></div>
+  <div class="music-progress"><input id="musicSeek" class="music-range" type="range" min="0" max="100" value="0" step="0.1" oninput="seekMusic(this.value)" aria-label="播放進度"><div class="music-times"><span id="musicCurrentTime">00:00</span><span id="musicDuration">03:04</span></div><div class="music-quality">本機音源 · 直接播放</div></div>
+  <div class="music-controls"><button class="music-control" onclick="restartMusic()" aria-label="重新播放">⟳</button><button class="music-control" onclick="restartMusic()" aria-label="上一首">◀|</button><button id="musicPlayBtn" class="music-play" onclick="toggleMusicPlayback()" aria-label="播放">▶</button><button class="music-control" onclick="restartMusic()" aria-label="下一首">|▶</button><button class="music-list-btn" onclick="toggleMusicList()" aria-label="歌單">☷</button></div>
+  <div id="musicList" class="music-list"><div class="music-list-heading">播放清單 · 1 首歌曲</div><div class="music-track"><img src="assets/non-ideal-lover-cover.jpg" alt="封面"><div><b>非理想愛人</b><small>Pandora 樂隊 · 本機音源</small></div><span style="margin-left:auto;color:#aaa">♫</span></div></div>
+  <div id="musicError" class="music-error"></div>
+  <audio id="musicAudio" preload="metadata" src="assets/non-ideal-lover.mp3" onloadedmetadata="musicMetadataLoaded()" ontimeupdate="musicTimeUpdate()" onended="musicEnded()" onerror="musicLoadError()"></audio>
+ </div>`;
+ const a=document.getElementById('musicAudio');
+ if(a){a.load();}
+}
+function fmtMusicTime(seconds){if(!Number.isFinite(seconds)||seconds<0)return '00:00';const m=Math.floor(seconds/60),s=Math.floor(seconds%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function musicMetadataLoaded(){const a=document.getElementById('musicAudio');if(!a)return;const d=document.getElementById('musicDuration');if(d)d.textContent=fmtMusicTime(a.duration);const e=document.getElementById('musicError');if(e)e.textContent=''}
+function musicTimeUpdate(){const a=document.getElementById('musicAudio');if(!a)return;const t=document.getElementById('musicCurrentTime'),r=document.getElementById('musicSeek');if(t)t.textContent=fmtMusicTime(a.currentTime);if(r&&a.duration)r.value=(a.currentTime/a.duration)*100}
+function toggleMusicPlayback(){const a=document.getElementById('musicAudio');if(!a)return;if(a.paused){a.play().then(()=>{const b=document.getElementById('musicPlayBtn');if(b)b.textContent='Ⅱ';const v=document.getElementById('musicVinyl');if(v)v.classList.add('playing')}).catch(()=>{const e=document.getElementById('musicError');if(e)e.textContent='無法播放，請確認音訊檔案完整。'})}else{a.pause();const b=document.getElementById('musicPlayBtn');if(b)b.textContent='▶';const v=document.getElementById('musicVinyl');if(v)v.classList.remove('playing')}}
+function seekMusic(value){const a=document.getElementById('musicAudio');if(a&&a.duration)a.currentTime=(Number(value)/100)*a.duration}
+function restartMusic(){const a=document.getElementById('musicAudio');if(!a)return;a.currentTime=0;a.play().then(()=>{const b=document.getElementById('musicPlayBtn');if(b)b.textContent='Ⅱ';const v=document.getElementById('musicVinyl');if(v)v.classList.add('playing')}).catch(()=>{})}
+function musicEnded(){const b=document.getElementById('musicPlayBtn');if(b)b.textContent='▶';const v=document.getElementById('musicVinyl');if(v)v.classList.remove('playing')}
+function musicLoadError(){const e=document.getElementById('musicError');if(e)e.textContent='音訊載入失敗，請確認 assets/non-ideal-lover.mp3 存在。'}
+function toggleMusicList(){const l=document.getElementById('musicList');if(l)l.classList.toggle('open')}
+function render(){
+ const titles={line:'LINE',insta:'Instagram',x:'X',settings:'設置',notes:'備忘錄',photos:'照片',music:'音樂',phone:'電話',weather:'天氣',google:'Google'};
+ $('appTitle').textContent=titles[currentApp]||currentApp;
+ const c=$('appContent'),f=$('appFooter');f.innerHTML='';
+ if(currentApp==='line')renderLine(c,f);
+ else if(currentApp==='insta')renderInsta(c);
+ else if(currentApp==='x')renderX(c);
+ else if(currentApp==='settings')renderSettings(c);
+ else if(currentApp==='notes')renderNotes(c);
+ else if(currentApp==='photos')renderPhotos(c);
+ else if(currentApp==='music')renderMusic(c);
+ else if(currentApp==='phone')renderPhone(c,f);
+ else if(currentApp==='weather')renderWeather(c);
+ else if(currentApp==='google')renderGoogle(c);
+}
+function renderLine(c,f){
+ if(chatIndex<0){
+  c.innerHTML='<div class="muted" style="margin-bottom:8px">聊天　好友　動態 · '+contacts.length+' 位聯繫人</div>'+
+  contacts.map((p,i)=>`<div class="row" onclick="openChat(${i})"><div class="avatar">${esc(p.emoji)}</div><div class="rowtext"><b>${esc(p.name)}</b><p>${esc(p.preview)}</p></div><span class="muted">›</span></div>`).join('')+
+  `<div style="padding:18px 0" class="muted">💌 聊天中的線索會慢慢拼成一個故事。</div><button class="smallbtn" onclick="randomMessage()">模擬收到一條新消息</button>`;
+ }else{
+  let p=contacts[chatIndex];
+  c.innerHTML=`<div class="center muted">與 ${esc(p.name)} 的對話 · 虛構劇情</div><div id="chatlog">${p.messages.map(m=>`<div class="bubble ${m.from==='me'?'mine':''}">${esc(m.text)}</div>`).join('')}</div>`;
+  if(!p.replied){
+   f.innerHTML='<div class="replybox"><div class="muted">選擇你的回復：</div>'+p.replies.map((r,i)=>`<button class="replybtn" onclick="reply(${i})">${esc(r)}</button>`).join('')+'</div>';
+  }else{
+   f.innerHTML='<div class="replybox"><button class="replybtn" onclick="backToChats()">‹ 返回聊天列表</button></div>';
+  }
+ }
+}
+function openChat(i){chatIndex=i;render()}
+function backToChats(){chatIndex=-1;render()}
+function reply(i){
+ const p=contacts[chatIndex];if(p.replied)return;
+ p.messages.push({from:'me',text:p.replies[i]});
+ p.messages.push({from:'them',text:p.next});
+ p.preview=p.next;p.replied=true;clueCount++;
+ save();render();$('storyStatus').textContent='已發現 '+clueCount+' 條故事線索';
+ toast('發現新線索！🔎');
+}
+function randomMessage(){
+ const p=contacts[Math.floor(Math.random()*contacts.length)];
+ p.messages.push({from:'them',text:['你在嗎？我剛想到一件事。','看到你的動態了，晚點聊聊？','有空的話，看看之前那張照片。'][Math.floor(Math.random()*3)]});
+ p.preview=p.messages[p.messages.length-1].text;notifications++;save();render();
+ toast(p.name+' 發來了一條新消息');
+}
+function renderInsta(c){
+ c.innerHTML=`<div class="muted" style="margin-bottom:12px">動態 · 關注的人</div>
+ <div style="display:flex;gap:12px;overflow:auto;margin-bottom:16px">${[['🌷','你的動態'],['🌙','mimi'],['🐈','catday'],['☕','coffee']].map(a=>`<div class="center" style="font-size:10px;flex-shrink:0"><div class="avatar" style="margin-bottom:5px">${a[0]}</div>${a[1]}</div>`).join('')}</div>
+ ${posts.map((p,i)=>`<div class="post"><div class="posthead"><div class="avatar">${esc(p.emoji)}</div><b>${esc(p.name)}</b><span class="muted" style="margin-left:auto">•••</span></div><div class="postphoto">${esc(p.photo)}</div><button class="action" onclick="likeInsta(this)">♡ 喜歡</button><div class="posttext"><b>${esc(p.name)}</b> ${esc(p.text)}<br><span class="muted">評論　分享</span></div></div>`).join('')}
+ <button class="smallbtn" onclick="newPost()">模擬刷新動態</button>`;
+}
+function likeInsta(b){b.textContent=b.textContent.includes('♡')?'♥ 已喜歡':'♡ 喜歡';b.style.color=b.textContent.includes('♥')?'#e66b88':''}
+function newPost(){
+ posts.unshift({name:'newday',emoji:'☁️',text:clueCount>2?'有人已經開始接近真相了。六月二十七日，別忘了。':'有時候，一條不起眼的動態會成為故事的開端。',photo:'☁️'});
+ render();toast('發現一條新動態');
+}
+function renderX(c){
+ const isSmall=xAccount==='omo_1727';
+ const name=isSmall?smallProfile.name:'Lin Yun-Ju';
+ const handle=isSmall?'@omo_1727':'@toby0817_';
+ const avatarSrc=isSmall?'':'assets/profile.jpg';
+ const avatarMarkup=isSmall?'<div class="xtweetavatar" style="display:grid;place-items:center;color:#8a9299;font-size:23px">●</div>':`<img class="xtweetavatar" src="${avatarSrc}" alt="Lin Yun-Ju 頭像">`;
+ const headerAvatar=isSmall?'<div class="xsideavatar" style="display:grid;place-items:center;color:#8a9299;font-size:23px">●</div>':`<img class="xsideavatar" src="${avatarSrc}" alt="頭像">`;
+ const posts=isSmall?smallAccountPosts:mainAccountPosts;
+ c.innerHTML=`<div class="xshell">
+  <div class="xnav"><button onclick="toggleXSidebar(true)" aria-label="打開賬號側邊欄">☰</button><div class="xbrand">𝕏</div><button onclick="toggleXSidebar(true)" aria-label="賬號">${isSmall?'●':'◉'}</button></div>
+  <div class="xprofile"><div class="xbanner"></div>${isSmall?'<div class="xprofilepic" style="display:grid;place-items:center;color:#8a9299;font-size:24px">●</div>':`<img class="xprofilepic" src="${avatarSrc}" alt="Lin Yun-Ju 頭像">`}<button class="xfollow" onclick="${isSmall?'toggleSmallEdit()':'toast(\'關注狀態（模擬）\')'}">${isSmall?'編輯個人資料':'關注'}</button><div class="xname">${esc(name)}</div><div class="xhandle">${esc(handle)}</div><div class="xbio">${esc(isSmall?smallProfile.bio:'Table tennis · 林昀儒｜把每一場比賽都認真打好。')}</div>${isSmall?`<div class="xmuted">發布渠道：${esc(smallProfile.channel||'未設定')}</div>`:''}<div class="xstats"><b>${isSmall?'0':'37'}</b> 正在關注　 <b>${isSmall?'0':'1,777'}</b> 關注者</div></div>
+  ${isSmall&&smallEditOpen?`<div class="xedit-panel"><label>暱稱</label><input id="smallXName" value="${esc(smallProfile.name)}" maxlength="24"><label>個性簽名</label><textarea id="smallXBio">${esc(smallProfile.bio)}</textarea><label>發布渠道</label><input id="smallXChannel" value="${esc(smallProfile.channel)}" placeholder="例如：LINE、Instagram、私人日記"><button class="xbluebtn" style="margin-top:10px" onclick="saveSmallProfile()">保存資料</button><button class="xbluebtn" style="margin:10px 0 0 6px;background:#687782" onclick="toggleSmallEdit(false)">取消</button></div>`:''}
+  <div class="xtabs"><button class="xtab active" onclick="switchXTab(this,'posts')">帖子</button><button class="xtab" onclick="switchXTab(this,'replies')">回復</button><button class="xtab" onclick="switchXTab(this,'media')">媒體</button><button class="xtab" onclick="switchXTab(this,'likes')">喜歡</button></div>
+  ${!isSmall?`<div class="xcompose"><textarea id="xNewPost" placeholder="發佈新帖子"></textarea><div style="display:flex;justify-content:flex-end;margin-top:7px"><button class="xbluebtn" onclick="publishXPost()">發帖</button></div></div>`:''}
+  <div id="xTimeline">${posts.map((p,i)=>renderXPost(p,i,isSmall)).join('')}</div>
+  <div class="xsideveil" id="xSideVeil" onclick="toggleXSidebar(false)"><div class="xsidebar" onclick="event.stopPropagation()"><div class="xsidehead"><b style="font-size:17px">賬戶信息</b><button class="xiconbtn" onclick="toggleXSidebar(false)">×</button></div><div style="margin:18px 0 8px">${headerAvatar}</div><b>${esc(name)}</b><div class="xhandle">${esc(handle)}</div><div class="xstats"><b>${isSmall?'0':'37'}</b> 正在關注　 <b>${isSmall?'0':'1,777'}</b> 關注者</div><div class="xsideitem" onclick="toggleXSidebar(false);toast('主頁')">個人主頁</div><div class="xsideitem" onclick="toggleXAccountSwitcher()"><b>切換賬號</b><span style="float:right">⌄</span></div><div style="font-size:11px;color:#536471;padding:13px 2px">當前為本地模擬賬號，不會連接真實 X。</div></div></div>
+  <div class="xswitch" id="xAccountSwitcher"><h4>切換賬號</h4><div class="xaccount" onclick="switchXAccount('main')"><img src="assets/profile.jpg" alt="Lin Yun-Ju"><div><b>Lin Yun-Ju</b><div class="xhandle">@toby0817_</div></div>${!isSmall?'<span style="margin-left:auto">✓</span>':''}</div><div class="xaccount" onclick="switchXAccount('omo_1727')"><div style="width:43px;height:43px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;color:#8a9299;font-size:22px">●</div><div><b>omo_1727</b><div class="xhandle">@omo_1727</div></div>${isSmall?'<span style="margin-left:auto">✓</span>':''}</div><button class="xbluebtn" style="width:100%;margin-top:7px" onclick="toggleXAccountSwitcher(false)">完成</button></div>
+ </div>`;
+}
+function renderXPost(p,i,isSmall){
+ const av=isSmall?'<div class="xtweetavatar" style="display:grid;place-items:center;color:#8a9299;font-size:23px">●</div>':'<img class="xtweetavatar" src="assets/profile.jpg" alt="Lin Yun-Ju 頭像">';
+ const media=p.photo?`<img class="xmedia" src="${p.photo}" alt="帖子配圖" loading="lazy">`:'';
+ return `<article class="xtweet"><div>${av}</div><div class="xtweetbody"><div class="xbyline"><strong>${esc(isSmall?'omo_1727':'Lin Yun-Ju')}</strong><span class="xmuted">${esc(isSmall?'@omo_1727':'@toby0817_')}</span><span class="xdate">· ${esc(p.date||'2024年')}</span></div><div class="xtweettext">${esc(p.text)}</div>${media}<div class="xactions"><button onclick="toast('回復（模擬）')">♧ 回復</button><button onclick="toast('已轉發（模擬）')">⇄ 轉發</button><button onclick="toggleXLike(this)">♡ 喜歡</button><button onclick="toast('已收藏（模擬）')">♧ 收藏</button></div></div></article>`;
+}
+function toggleXSidebar(open){const el=$('xSideVeil');if(el)el.classList.toggle('open',open)}
+function toggleXAccountSwitcher(open){const el=$('xAccountSwitcher');if(!el)return;el.classList.toggle('open',open===undefined?!el.classList.contains('open'):open)}
+
+function toggleSmallEdit(force){smallEditOpen=force===undefined?!smallEditOpen:force;renderX($('appContent'))}
+function saveSmallProfile(){smallProfile.name=$('smallXName').value.trim()||'omo_1727';smallProfile.bio=$('smallXBio').value.trim();smallProfile.channel=$('smallXChannel').value.trim();localStorage.setItem('smallXProfile',JSON.stringify(smallProfile));smallEditOpen=false;renderX($('appContent'));toast('小號個人資料已保存')}
+
+function switchXAccount(account){xAccount=account;renderX($('appContent'));toast(account==='main'?'已切換到 Lin Yun-Ju':'已切換到 omo_1727');}
+function switchXTab(btn,tab){document.querySelectorAll('.xtab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(tab==='posts')return;const timeline=$('xTimeline');if(timeline)timeline.innerHTML=`<div class="xempty">${tab==='media'?'暫無更多媒體內容':tab==='replies'?'還沒有回復':'喜歡的內容暫未顯示'}<br><span style="font-size:11px">這是本地模擬頁面</span></div>`}
+function toggleXLike(btn){btn.classList.toggle('liked');btn.textContent=btn.classList.contains('liked')?'♥ 已喜歡':'♡ 喜歡'}
+function publishXPost(){const input=$('xNewPost');if(!input||!input.value.trim()){toast('先寫點內容吧');return}mainAccountPosts.unshift({date:'剛剛',text:input.value.trim(),photo:''});renderX($('appContent'));toast('已發佈模擬動態')}
+
+function tweet(n,e,t){return `<div class="post" style="padding:12px;display:flex;gap:9px"><div class="avatar">${e}</div><div style="flex:1;font-size:12px;line-height:1.7"><b>${esc(n)}</b><div>${esc(t)}</div><button class="action" onclick="toast('評論功能（模擬）')">評論</button><button class="action" onclick="this.textContent=this.textContent.includes('♡')?'♥ 已喜歡':'♡ 喜歡'">♡ 喜歡</button></div></div>`}
+function publishTweet(){
+ const input=$('tweetInput'),v=input.value.trim();if(!v){toast('先寫點內容吧');return}
+ $('tweets').insertAdjacentHTML('afterbegin',tweet(owner,avatar,v));input.value='';toast('已發佈模擬動態');
+}
+function renderSettings(c){
+ c.innerHTML=`<div class="setting"><div class="settingrow"><label>手機主人名字</label><input id="ownerInput" value="${esc(owner)}" maxlength="16"></div>
+ <div class="settingrow"><label>手機壁紙</label><select id="wallInput"><option value="mint">薄荷奶油</option><option value="pink">櫻花粉</option><option value="blue">晴空藍</option><option value="night">靜謐夜色</option></select></div>
+ <button class="primary" style="margin:12px 0" onclick="saveSettings()">保存個性化設置</button></div>
+ <div class="setting"><div style="padding:13px 0;font-weight:700;font-size:13px">LINE 聯繫人改名</div>
+ ${contacts.map((p,i)=>`<div class="settingrow"><label>${esc(p.name)}</label><input id="contact${i}" value="${esc(p.name)}" maxlength="20"></div>`).join('')}
+ <button class="primary" style="margin:12px 0" onclick="saveNames()">保存聯繫人名字</button></div>
+ <div class="setting"><div class="settingrow"><b>劇情進度</b><p class="muted">已發現 ${clueCount} 條線索。選擇不同的回復，會影響你發現故事的過程。</p><button class="smallbtn" onclick="resetStory()">重新開始劇情</button></div></div>
+ <div class="muted">演示版本：設置保存在當前瀏覽器中。</div>`;
+ $('wallInput').value=wall;
+}
+function saveSettings(){
+ owner=$('ownerInput').value.trim()||'toby0817';wall=$('wallInput').value;
+ save();applyWall();$('welcome').textContent='Good day, '+owner;toast('設置已保存');render();
+}
+function saveNames(){
+ contacts.forEach((p,i)=>{const v=$('contact'+i).value.trim();if(v)p.name=v});
+ save();toast('聯繫人名字已更新');render();
+}
+function resetStory(){
+ if(!confirm('確定要重置劇情進度嗎？聊天記錄和線索都會恢復初始狀態。'))return;
+ contacts=defaultContacts.map(p=>({...p,messages:p.messages.map(m=>({...m})),replied:false}));
+ clueCount=0;save();toast('劇情已重新開始');render();
+}
+
+function renderWeather(c){
+ const days=[['今天','☀️','21°','26°'],['週三','🌧️','21°','24°','75%'],['週四','🌤️','21°','27°'],['週五','🌤️','20°','27°'],['週六','🌧️','21°','26°','45%'],['週日','🌦️','22°','27°','30%'],['週一','🌧️','21°','26°','55%']];
+ c.innerHTML=`<div style="margin:-14px;padding:22px 17px 28px;min-height:100%;color:white;background:linear-gradient(160deg,#aab8c7,#596b7c 55%,#465667)">
+ <div style="text-align:center;padding:12px 0 24px"><div style="font-size:20px;letter-spacing:2px">台北市</div><div style="font-size:76px;font-weight:200;line-height:1.2">26°</div><div style="font-size:14px;opacity:.9">多雲轉晴</div><div style="margin-top:7px;font-size:16px">最高 26°　最低 21°</div></div>
+ <div style="background:#40536788;border:1px solid #ffffff20;border-radius:23px;padding:17px 15px;margin-bottom:15px"><b style="font-size:14px">逐時預報</b><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:3px;text-align:center;margin-top:18px">${[['現在','☁️','26°'],['12時','🌤️','26°'],['13時','🌤️','26°'],['14時','☀️','26°'],['15時','☀️','25°'],['16時','☀️','25°']].map(d=>`<div><div style="font-size:10px;opacity:.9">${d[0]}</div><div style="font-size:20px;margin:17px 0">${d[1]}</div><b style="font-size:12px">${d[2]}</b></div>`).join('')}</div></div>
+ <div style="background:#40536788;border:1px solid #ffffff20;border-radius:23px;padding:5px 15px"><b style="display:block;padding:12px 0 6px;font-size:14px">未來 7 天</b>${days.map((d,i)=>`<div style="display:grid;grid-template-columns:48px 32px 1fr 35px;align-items:center;gap:8px;padding:13px 0;border-bottom:${i===6?0:1}px solid #ffffff20;font-size:13px"><span>${d[0]}</span><span style="font-size:20px">${d[1]}</span><span style="display:flex;align-items:center;gap:7px;color:#dce5ef"><span>${d[2]}</span><span style="height:6px;border-radius:8px;background:linear-gradient(90deg,#f9c342,#ff982f);flex:1;max-width:90px"></span></span><b style="text-align:right">${d[3]}</b></div>${d[4]?`<div style="font-size:10px;color:#86d9f5;margin-top:-7px">${d[4]} 降雨機率</div>`:''}`).join('')}</div><div style="font-size:10px;text-align:center;opacity:.65;margin-top:14px">天氣介面示意 · 簡約週預報</div></div>`;
+}
+function renderGoogle(c){
+ const history=['林昀儒 張本智和','到底怎么称呼宿敌比较合适','日本好吃烤肉店推荐','日语入门大全'];
+ c.innerHTML=`<div style="margin:-14px;min-height:100%;background:#edf3ff;padding:18px 16px;color:#202124">
+ <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:42px"><span>11:56</span><span>● 5G ▰</span></div>
+ <div style="text-align:center;font-size:49px;letter-spacing:-3px;font-weight:500;margin-bottom:40px"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+ <div onclick="showGoogleHistory()" style="display:flex;align-items:center;gap:10px;border-radius:32px;background:#dce5f8;padding:17px 15px;color:#59616c;cursor:pointer"><span style="font-size:22px">＋</span><span style="flex:1">在 Google 中搜索或输入网址</span><span>🎙</span><span>⌕</span></div>
+ <div style="display:flex;gap:9px;margin:12px 0 24px"><div style="flex:1;text-align:center;background:#dce5f8;border-radius:24px;padding:12px;font-size:13px">✧ AI 模式</div><div style="flex:1;text-align:center;background:#dce5f8;border-radius:24px;padding:12px;font-size:13px">♧ 无痕模式</div></div>
+ <div style="background:white;border-radius:22px;padding:18px 14px;margin-bottom:16px"><div style="display:flex;justify-content:space-around;text-align:center"><div><div style="font-size:25px">🟨</div><small>东港镇海宫</small></div><div><div style="font-size:25px">📸</div><small>Instagram</small></div><div><div style="font-size:25px">💗</div><small>最爱</small></div><div><div style="font-size:25px">𝕏</div><small>X</small></div></div></div>
+ <div style="background:white;border-radius:22px;padding:17px"><b>快捷方式</b><div style="display:flex;justify-content:space-around;text-align:center;margin-top:20px;color:#4285f4"><div>☆<small style="display:block;color:#555;margin-top:8px">书签</small></div><div>▤<small style="display:block;color:#555;margin-top:8px">阅读清单</small></div><div>▣<small style="display:block;color:#555;margin-top:8px">最近打开</small></div><div>◷<small style="display:block;color:#555;margin-top:8px">历史记录</small></div></div></div>
+ <div id="googleHistory" style="display:none;background:white;border-radius:20px;padding:16px;margin-top:14px"><input id="googleSearchInput" placeholder="搜索或输入网址" style="width:100%;padding:12px;border:0;border-radius:12px;background:#f1f3f4;font-size:14px;outline:none"><div style="font-size:12px;color:#777;margin:15px 0 6px">最近搜索</div>${history.map(h=>`<div onclick="document.getElementById('googleSearchInput').value='${h}';toast('已选择搜索内容')" style="padding:12px 2px;border-bottom:1px solid #eee;cursor:pointer;font-size:14px">◷　${h}</div>`).join('')}</div></div>`;
+}
+function showGoogleHistory(){const h=document.getElementById('googleHistory');if(h){h.style.display='block';setTimeout(()=>document.getElementById('googleSearchInput')?.focus(),30)}}
+
+function renderNotes(c){
+ c.innerHTML=`<div class="post" style="padding:15px"><h3 style="font-size:15px">☁️ 給自己的小紙條</h3><textarea id="note" class="compose" style="min-height:230px" placeholder="寫下你的想法……"></textarea><button class="primary" style="margin-top:12px" onclick="localStorage.setItem('myPhoneNote',$('note').value);toast('備忘錄已保存')">保存</button></div>`;
+ $('note').value=localStorage.getItem('myPhoneNote')||'六月二十七日。\\n還有一些事情沒有答案……';
+}
+
+function renderPhone(c,f){
+ const tabs=[['favorites','☆','個人收藏'],['recent','◷','最近通話'],['contacts','♙','聯絡人'],['keypad','▦','撥號鍵盤'],['voicemail','▣','語音留言']];
+ let body='';
+ if(phoneTab==='favorites') body=`<h3 style="font-size:20px;margin:4px 0 14px">個人收藏</h3><div class="muted">常用聯絡人</div>${['樊振東','張本智和','媽媽','哥哥'].map(n=>phonePersonRow(n)).join('')}`;
+ if(phoneTab==='recent') body=`<h3 style="font-size:20px;margin:4px 0 14px">最近通話</h3><div class="muted" style="padding:24px 5px;text-align:center">尚無最近通話</div>`;
+ if(phoneTab==='contacts') body=phoneContactIndex>=0?phoneContactDetail(phonePeople[phoneContactIndex]):`<h3 style="font-size:20px;margin:4px 0 12px">聯絡人</h3><input placeholder="搜尋聯絡人" oninput="filterPhoneContacts(this.value)" style="width:100%;padding:10px;border:0;border-radius:10px;background:#e9ecef;margin-bottom:8px"><div id="phoneContactList">${phonePeople.map(n=>phonePersonRow(n)).join('')}</div>`;
+ if(phoneTab==='keypad') body=`<h3 style="font-size:20px;margin:4px 0 14px">撥號鍵盤</h3><input id="dialNumber" placeholder="輸入號碼" readonly style="width:100%;padding:14px;border:0;background:transparent;text-align:center;font-size:23px;margin-bottom:12px"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${['1','2','3','4','5','6','7','8','9','*','0','#'].map(n=>`<button class="key" style="width:55px;height:55px;background:white;border:0" onclick="dialKey('${n}')">${n}</button>`).join('')}</div><button class="primary" style="margin-top:15px;background:#2fb878;color:white" onclick="toast('模擬撥號，不會撥出真實電話')">☎</button>`;
+ if(phoneTab==='voicemail') body=`<h3 style="font-size:20px;margin:4px 0 14px">語音留言</h3><div class="voicemail-card"><div style="display:flex;align-items:center;gap:10px"><button class="vm-play" onclick="toggleVoicemail()">${vmPlaying?'Ⅱ':'▶'}</button><div style="flex:1"><b>張本智和</b><div class="muted">2025年7月13日 22:00</div></div><span class="muted">00:25</span></div><div class="vm-wave">${Array.from({length:38},(_,i)=>`<i style="--h:${5+(i*7%17)}px"></i>`).join('')}</div><div class="muted">${vmPlaying?'正在播放語音留言（模擬）':'點擊播放可模擬收聽'}</div><button class="smallbtn" onclick="vmOpen=!vmOpen;renderPhone($('appContent'),$('appFooter'))">${vmOpen?'收起文字':'轉成文字'}</button>${vmOpen?`<div style="font-size:13px;line-height:1.8;padding:12px 0;border-top:1px solid #eee;margin-top:10px">你真的不打算來找我嗎？</div>`:''}</div>`;
+ c.innerHTML=`<div style="padding-bottom:8px">${body}</div>`;
+ f.innerHTML=`<div class="phone-tabs">${tabs.map(([id,ico,label])=>`<button class="phone-tab ${phoneTab===id?'active':''}" onclick="setPhoneTab('${id}')"><span>${ico}</span>${label}</button>`).join('')}</div>`;
+}
+function phonePersonRow(name){return `<div class="row" onclick="openPhoneContact('${name}')"><div class="avatar" style="background:#e5f2ec;color:#26845e">${name==='媽媽'?'♡':name==='爸爸'?'⌂':name==='哥哥'?'☾':'●'}</div><div class="rowtext"><b>${esc(name)}</b><p>聯絡人 · 電話資訊已隱去</p></div><span class="muted">›</span></div>`}
+function setPhoneTab(tab){phoneTab=tab;phoneContactIndex=-1;renderPhone($('appContent'),$('appFooter'))}
+function openPhoneContact(name){phoneTab='contacts';phoneContactIndex=phonePeople.indexOf(name);renderPhone($('appContent'),$('appFooter'))}
+function phoneContactDetail(name){return `<button class="back" onclick="phoneContactIndex=-1;renderPhone($('appContent'),$('appFooter'))">‹ 返回聯絡人</button><div class="contact-detail"><div class="big-avatar">${name==='媽媽'?'♡':name==='爸爸'?'⌂':name==='哥哥'?'☾':'●'}</div><h2>${esc(name)}</h2><div class="muted">電話資訊已隱去</div><button class="contact-action" onclick="toast('模擬通話，不會撥打真實電話')">☎ 通話</button><button class="contact-action" onclick="toast('模擬訊息')">訊息</button></div>`}
+function filterPhoneContacts(q){const list=$('phoneContactList');if(list)list.innerHTML=phonePeople.filter(n=>n.includes(q)).map(n=>phonePersonRow(n)).join('')||'<div class="muted" style="padding:20px">找不到聯絡人</div>'}
+function dialKey(k){const n=$('dialNumber');if(n)n.value+=k}
+function toggleVoicemail(){vmPlaying=!vmPlaying;renderPhone($('appContent'),$('appFooter'));if(vmPlaying)setTimeout(()=>{vmPlaying=false;if(currentApp==='phone'&&phoneTab==='voicemail')renderPhone($('appContent'),$('appFooter'))},25000)}
+
+function renderPhotos(c){
+ c.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between"><h3 style="font-size:18px;margin:2px 0">所有照片</h3><span class="muted">${albumPhotos.length} 張</span></div><div class="muted" style="margin-top:5px">依日期排序 · 僅顯示已加入的照片</div><div class="album-grid">${albumPhotos.map((p,i)=>`<button class="album-item" onclick="openPhoto(${i})"><img src="${p.src}" alt="相片 ${i+1}" loading="lazy"><span class="album-date">${p.date}</span></button>`).join('')}</div><div id="photoViewer" class="photo-viewer" onclick="closePhoto(event)"><button onclick="closePhoto(event)" aria-label="關閉">×</button><img id="photoViewerImage" src="" alt="放大相片"></div>`;
+}
+function openPhoto(i){const v=$('photoViewer'),im=$('photoViewerImage');if(v&&im){im.src=albumPhotos[i].src;v.classList.add('open')}}
+function closePhoto(e){if(e.target.id==='photoViewer'||e.target.tagName==='BUTTON')$('photoViewer').classList.remove('open')}
+
+</script>
+</body></html>
